@@ -79,7 +79,7 @@ extension UIViewController {
             return
         }
         
-        let justAOneTimeThing: () = {
+        let _: () = {
             let originalSelector = #selector(UIViewController.prepare(for:sender:))
             let swizzledSelector = #selector(UIViewController.newPrepare(for:sender:))
             
@@ -94,8 +94,6 @@ extension UIViewController {
                 method_exchangeImplementations(originalMethod, swizzledMethod);
             }
         }()
-        
-        print(justAOneTimeThing)
         
     }
     
@@ -131,10 +129,6 @@ class VCConfigurator{
     
     init(_ identifier:String){
         segueIdentifier = identifier
-    }
-    
-    deinit{
-        print("deinit \(self)")
     }
 
 }
