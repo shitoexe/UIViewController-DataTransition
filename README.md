@@ -20,6 +20,15 @@ self.segue("segueIdentifier").passData("Passed data string").onComplete{ paramet
             }
          }.execute()
 ```
+
+... without data
+```swift
+self.segue("segueIdentifier").onComplete{ parameter in
+            if let stringParameter = parameter as? String{
+                print(stringParameter)
+            }
+         }.execute()
+```
 If segue goes to modal viewcontroller with UINavigationControler than data will be passed to first UIViewController
 
 **In destination viewController:**
