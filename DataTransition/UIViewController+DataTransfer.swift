@@ -48,6 +48,9 @@ extension UIViewController {
             return outputBlock(parameter)
         }
     }
+    func complete(){
+        self.complete(nil)
+    }
     
     //MARK: - Accessors -
     

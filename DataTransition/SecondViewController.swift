@@ -15,8 +15,10 @@ class SecondViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         
-        let r = self.incomingData()
-        print("incoming \(r)")
+        if let r = self.incomingData() as? String {
+            print("incoming \(r)")
+        }
+        
 
     }
 

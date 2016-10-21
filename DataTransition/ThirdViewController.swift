@@ -22,7 +22,7 @@ class ThirdViewController: UIViewController {
     }
     
     @IBAction func doneButtonDidTap(_ sender: AnyObject) {
-        self.complete("From modal")
+        self.complete(nil)
         self.dismiss(animated: true, completion: nil)
     }
 

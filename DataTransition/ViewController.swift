@@ -26,15 +26,22 @@ class ViewController: UIViewController {
 
     @IBAction func forvardButtonDidTap(_ sender: UIButton) {
         
-        self.segue(kNextControllerSegueIdentifier).onComplete{ (parameter) in
-            print(parameter)
-            }.passData("dddddddddd").execute()
+        self
+            .segue(kNextControllerSegueIdentifier).onComplete{ parameter in
+            
+            if let stringParameter = parameter as? String{
+                print(stringParameter)
+            }
+            
+        }.passData("dddddddddd").execute()
     }
     
     @IBAction func modalButtonDidTap(_ sender: UIButton) {
         
-        self.segue(kModalControllerSegueIdentifier).onComplete{ (parameter) in
-            print(parameter)
+        self.segue(kModalControllerSegueIdentifier).onComplete{ parameter in
+            if let stringParameter = parameter as? String{
+                print(stringParameter)
+            }
             }.execute()
     }
     
