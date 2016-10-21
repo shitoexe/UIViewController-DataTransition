@@ -22,7 +22,7 @@ class ThirdViewController: UIViewController {
     }
     
     @IBAction func doneButtonDidTap(_ sender: AnyObject) {
-        self.complete(nil)
+        self.complete()
         self.dismiss(animated: true, completion: nil)
     }
 
