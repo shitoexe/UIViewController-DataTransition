@@ -26,8 +26,7 @@ class ViewController: UIViewController {
 
     @IBAction func forvardButtonDidTap(_ sender: UIButton) {
         
-        self
-            .segue(kNextControllerSegueIdentifier).onComplete{ parameter in
+        self.segue(kNextControllerSegueIdentifier).onComplete{ parameter in
             
             if let stringParameter = parameter as? String{
                 print(stringParameter)
