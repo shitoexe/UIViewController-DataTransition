@@ -13,9 +13,10 @@ Pod::Spec.new do |s|
   s.summary      = "Extension of UIViewController for passing data between VC during navigation transition"
   s.license      = "MIT"
   s.homepage     = "https://github.com/shitoexe/UIViewController-DataTransfer"
-  s.author             = { "Alexey Shadura" => "shito.work@gmail.com" }
-  s.platform     = :ios
+  s.author       = { "Alexey Shadura" => "shito.work@gmail.com" }
+  s.license      = { :type => 'MIT', :file => 'LICENSE' }
+  s.platform     = :ios, "8.0"
   s.source       = { :git => "https://github.com/shitoexe/UIViewController-DataTransfer.git", :tag => "#{s.version}" }
-  s.source_files  = "Extension", "Extension/**/*.swift"
+  s.source_files  = "DataTransition/Extension", "DataTransition/Extension/*.swift"
 
 end
