@@ -10,7 +10,7 @@ import UIKit
 
 private var ConfiguratorKey: UInt8 = 0
 
-extension UIViewController {
+public extension UIViewController {
     
     //MARK: - General Methods -
     //MARK: Method for source VC
