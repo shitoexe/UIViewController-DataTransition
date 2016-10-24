@@ -14,7 +14,7 @@ public extension UIViewController {
     
     //MARK: - General Methods -
     //MARK: Method for source VC
-    func segue(_ identifier:String) -> UIViewController{
+   public func segue(_ identifier:String) -> UIViewController{
         
         let configurator = VCConfigurator(identifier);
         self.setInitConfigurator(configurator)
@@ -22,33 +22,34 @@ public extension UIViewController {
     }
     
     /// - Starts transition execution
-    func execute(){
+    public func execute(){
         self.performSegue(withIdentifier: self.configurator()!.segueIdentifier, sender: nil)
     }
     
     /// - Pass data in next VC
-    func passData(_ inputData:Any) -> UIViewController{
+    public func passData(_ inputData:Any) -> UIViewController{
         self.configurator()!.inputData = inputData
         return self
     }
     
     /// - Set callback action
-    func onComplete(_ outputBlock:@escaping VCConfigurator.OutputBlock) -> UIViewController{
+    public func onComplete(_ outputBlock:@escaping (_ parameter:Any? )-> Void) -> UIViewController{
         self.configurator()!.outputBlock = outputBlock
         return self
     }
     
     //MARK: Methods for destination VC
-    func incomingData() -> Any?{
+    public func incomingData() -> Any?{
         return self.configurator()?.inputData
     }
     
-    func complete(_ parameter:Any?){
+    public func complete(_ parameter:Any?){
         if let outputBlock = self.configurator()?.outputBlock {
             return outputBlock(parameter)
         }
     }
-    func complete(){
+    
+    public func complete(){
         self.complete(nil)
     }
     
@@ -72,7 +73,7 @@ public extension UIViewController {
     
     // MARK: - Method Swizzling -
     
-    open override static func initialize() {
+    override open static func initialize() {
         
         // make sure this isn't a subclass
         if self !== UIViewController.self {
@@ -116,21 +117,17 @@ public extension UIViewController {
         self.setInitConfigurator(nil)
     }
     
-}
-
-class VCConfigurator{
-    
-
-    typealias OutputBlock = (_ parameter:Any? )-> Void
-    
-    var segueIdentifier:String
-    var inputData:Any? = nil
-    var outputBlock:OutputBlock? = nil
-    
-    init(_ identifier:String){
-        segueIdentifier = identifier
+    class VCConfigurator{
+        var segueIdentifier:String
+        var inputData:Any? = nil
+        var outputBlock:((_ parameter:Any? )-> Void)? = nil
+        
+        init(_ identifier:String){
+            segueIdentifier = identifier
+        }
+        
     }
-
+    
 }
 
 func getAssociatedObject<ValueType: AnyObject>(_ base: AnyObject, key: UnsafePointer<UInt8>) -> ValueType? {
