@@ -8,72 +8,77 @@
 
 import UIKit
 
+private var InitConfiguratorKey: UInt8 = 0
 private var ConfiguratorKey: UInt8 = 0
 
 public extension UIViewController {
     
+    
+    var initConfigurator: VCConfigurator? {
+        get { return objc_getAssociatedObject(self, &InitConfiguratorKey) as? VCConfigurator }
+        set { objc_setAssociatedObject(self, &InitConfiguratorKey, newValue, .OBJC_ASSOCIATION_RETAIN) }
+    }
+    
+    var configurator: VCConfigurator? {
+        get { return objc_getAssociatedObject(self, &ConfiguratorKey) as? VCConfigurator }
+        set { objc_setAssociatedObject(self, &ConfiguratorKey, newValue, .OBJC_ASSOCIATION_RETAIN) }
+    }
+    
+    var incomingData: Any? {
+        return self.configurator?.inputData
+    }
+    
     //MARK: - General Methods -
     //MARK: Method for source VC
-   public func segue(_ identifier:String) -> UIViewController{
-        
-        let configurator = VCConfigurator(identifier);
-        self.setInitConfigurator(configurator)
+   public func segue(_ identifier:String) -> UIViewController {
+        initConfigurator = VCConfigurator(identifier);
         return self
     }
     
     /// - Starts transition execution
     public func execute(){
-        self.performSegue(withIdentifier: self.configurator()!.segueIdentifier, sender: nil)
+        guard let initConfigurator = self.initConfigurator else {
+            return
+        }
+        
+        self.performSegue(withIdentifier: initConfigurator.segueIdentifier, sender: nil)
     }
     
     /// - Pass data in next VC
-    public func passData(_ inputData:Any) -> UIViewController{
-        self.configurator()!.inputData = inputData
+    public func passData(_ inputData:Any) -> UIViewController {
+        guard let initConfigurator = self.initConfigurator else {
+            return self
+        }
+        initConfigurator.inputData = inputData
         return self
     }
     
     /// - Set callback action
-    public func onComplete(_ outputBlock:@escaping (_ parameter:Any? )-> Void) -> UIViewController{
-        self.configurator()!.outputBlock = outputBlock
+    public func onComplete(_ outputBlock:@escaping (_ parameter:Any? )-> Void) -> UIViewController {
+        guard let initConfigurator = self.initConfigurator else {
+            return self
+        }
+        initConfigurator.outputBlock = outputBlock
         return self
     }
     
     //MARK: Methods for destination VC
-    public func incomingData() -> Any?{
-        return self.configurator()?.inputData
-    }
     
     public func complete(_ parameter:Any?){
-        if let outputBlock = self.configurator()?.outputBlock {
-            return outputBlock(parameter)
+        
+        guard let outputBlock = self.configurator?.outputBlock else {
+            return
         }
+        outputBlock(parameter)
     }
     
     public func complete(){
         self.complete(nil)
     }
     
-    //MARK: - Accessors -
-    
-    func setConfigurator(_ configurator:VCConfigurator){
-        objc_setAssociatedObject(self, &ConfiguratorKey, configurator,.OBJC_ASSOCIATION_RETAIN)
-    }
-    
-    func configurator() -> VCConfigurator?{
-        return objc_getAssociatedObject(self, &ConfiguratorKey) as? VCConfigurator
-    }
-    
-    func setInitConfigurator(_ configurator:VCConfigurator?){
-        objc_setAssociatedObject(self, &ConfiguratorKey, configurator,.OBJC_ASSOCIATION_RETAIN)
-    }
-    
-    func initConfigurator() -> VCConfigurator?{
-        return objc_getAssociatedObject(self, &ConfiguratorKey) as? VCConfigurator
-    }
-    
     // MARK: - Method Swizzling -
     
-    override open static func initialize() {
+    open override class func initialize() {
         
         // make sure this isn't a subclass
         if self !== UIViewController.self {
@@ -100,21 +105,15 @@ public extension UIViewController {
     
     func newPrepare(for segue: UIStoryboardSegue, sender: Any?)
     {
-        
-        let configurator = self.initConfigurator()
-        
-        if configurator == nil{
-            return
+        if let initConfigurator = self.initConfigurator {
+            if let navigationController = segue.destination as? UINavigationController {
+                navigationController.viewControllers.first?.configurator = initConfigurator
+            } else {
+                segue.destination.configurator = initConfigurator
+            }
+            
+            self.initConfigurator = nil
         }
-        let destination = segue.destination
-        if destination is UINavigationController {
-            let navigationController:UINavigationController = destination as! UINavigationController
-            navigationController.viewControllers.first?.setConfigurator(self.initConfigurator()!)
-        } else {
-            destination.setConfigurator(self.initConfigurator()!)
-        }
-        
-        self.setInitConfigurator(nil)
     }
     
     class VCConfigurator{

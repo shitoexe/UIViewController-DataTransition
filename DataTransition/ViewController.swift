@@ -32,7 +32,7 @@ class ViewController: UIViewController {
                 print(stringParameter)
             }
             
-        }.passData("dddddddddd").execute()
+        }.passData("data for next view controller").execute()
     }
     
     @IBAction func modalButtonDidTap(_ sender: UIButton) {
