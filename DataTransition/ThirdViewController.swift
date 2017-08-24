@@ -22,18 +22,12 @@ class ThirdViewController: UIViewController {
     }
     
     @IBAction func doneButtonDidTap(_ sender: AnyObject) {
-        self.complete()
+        self.complete("data from modal VC")
         self.dismiss(animated: true, completion: nil)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    
+    @IBAction func nextButtonDidTap(_ sender: AnyObject) {
+        self.segue("nextSegue").passData("data for 4th vc").execute()
     }
-    */
 
 }

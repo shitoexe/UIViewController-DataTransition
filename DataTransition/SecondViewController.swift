@@ -15,7 +15,7 @@ class SecondViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         
-        if let r = self.incomingData() as? String {
+        if let r = self.incomingData as? String {
             print("incoming \(r)")
         }
         
@@ -28,7 +28,7 @@ class SecondViewController: UIViewController {
     }
     
     @IBAction func backButtonDidTap(_ sender: AnyObject) {
-        self.complete("And Hello you")
+        self.complete("Data for previous view controller")
         _ = (self.navigationController?.popViewController(animated: true))
     }
 
