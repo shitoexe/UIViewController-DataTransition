@@ -35,7 +35,7 @@ If segue goes to modal viewcontroller with UINavigationControler than data will 
 
 Process of checking of incoming data
 ```swift
-if let passedData = self.incomingData() as? String {
+if let passedData = self.incomingData as? String {
    print("incoming \(passedData)")
 }
 ```
