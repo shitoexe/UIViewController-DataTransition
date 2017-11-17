@@ -13,6 +13,9 @@ private var ConfiguratorKey: UInt8 = 0
 
 public extension UIViewController {
     
+    static let doInitialize: Void = {
+        UIViewController.doSwizzling()
+    }()
     
     var initConfigurator: VCConfigurator? {
         get { return objc_getAssociatedObject(self, &InitConfiguratorKey) as? VCConfigurator }
@@ -30,7 +33,7 @@ public extension UIViewController {
     
     //MARK: - General Methods -
     //MARK: Method for source VC
-   public func segue(_ identifier:String) -> UIViewController {
+    public func segue(_ identifier:String) -> UIViewController {
         initConfigurator = VCConfigurator(identifier);
         return self
     }
@@ -64,7 +67,7 @@ public extension UIViewController {
     
     //MARK: Methods for destination VC
     
-    public func complete(_ parameter:Any?){
+    public func complete(_ parameter:Any?) {
         
         guard let outputBlock = self.configurator?.outputBlock else {
             return
@@ -72,14 +75,20 @@ public extension UIViewController {
         outputBlock(parameter)
     }
     
-    public func complete(){
+    public func complete() {
         self.complete(nil)
     }
     
     // MARK: - Method Swizzling -
     
+    #if swift(>=4.0)
+    #else
     open override class func initialize() {
-        
+    doSwizzling()
+    }
+    #endif
+    
+    private class func doSwizzling() {
         // make sure this isn't a subclass
         if self !== UIViewController.self {
             return
@@ -89,22 +98,26 @@ public extension UIViewController {
             let originalSelector = #selector(UIViewController.prepare(for:sender:))
             let swizzledSelector = #selector(UIViewController.newPrepare(for:sender:))
             
-            let originalMethod = class_getInstanceMethod(self, originalSelector)
-            let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+            #if swift(>=4.0)
+                guard let originalMethod = class_getInstanceMethod(self, originalSelector) else { return }
+                guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else { return }
+            #else
+                let originalMethod = class_getInstanceMethod(self, originalSelector)
+                let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+            #endif
             
             let didAddMethod = class_addMethod(self, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
             
             if didAddMethod {
                 class_replaceMethod(self, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
             } else {
-                method_exchangeImplementations(originalMethod, swizzledMethod);
+                method_exchangeImplementations(originalMethod, swizzledMethod)
             }
         }()
         
     }
     
-    func newPrepare(for segue: UIStoryboardSegue, sender: Any?)
-    {
+    @objc func newPrepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let initConfigurator = self.initConfigurator {
             if let navigationController = segue.destination as? UINavigationController {
                 navigationController.viewControllers.first?.configurator = initConfigurator
@@ -116,26 +129,25 @@ public extension UIViewController {
         }
     }
     
-    class VCConfigurator{
-        var segueIdentifier:String
-        var inputData:Any? = nil
-        var outputBlock:((_ parameter:Any? )-> Void)? = nil
+    class VCConfigurator {
+        var segueIdentifier: String
+        var inputData: Any? = nil
+        var outputBlock: ((_ parameter:Any? )-> Void)? = nil
         
-        init(_ identifier:String){
+        init(_ identifier: String){
             segueIdentifier = identifier
         }
-        
     }
-    
 }
 
 func getAssociatedObject<ValueType: AnyObject>(_ base: AnyObject, key: UnsafePointer<UInt8>) -> ValueType? {
-        if let associated = objc_getAssociatedObject(base, key)
-            as? ValueType { return associated }
-        return nil
+    if let associated = objc_getAssociatedObject(base, key)
+        as? ValueType { return associated }
+    return nil
 }
 
 func associateObject<ValueType: AnyObject>( base: AnyObject, key: UnsafePointer<UInt8>, value: ValueType) {
     objc_setAssociatedObject(base, key, value,
                              .OBJC_ASSOCIATION_RETAIN)
 }
+
