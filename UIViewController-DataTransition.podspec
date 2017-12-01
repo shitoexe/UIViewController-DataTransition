@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "UIViewController-DataTransition"
-  s.version      = "1.0.5"
+  s.version      = "1.0.6"
   s.summary      = "Extension of UIViewController for passing data between VC during navigation transition"
   s.license      = "MIT"
   s.homepage     = "https://github.com/shitoexe/UIViewController-DataTransition"
